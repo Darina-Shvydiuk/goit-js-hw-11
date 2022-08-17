@@ -3,6 +3,7 @@ import Notiflix from 'notiflix';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 import { fetchImages } from './fetchImages';
+// import imageCard from './templets/imageCard.hbs';
 
 const refs = {
   form: document.querySelector('.search-form'),

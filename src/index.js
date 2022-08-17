@@ -2,17 +2,103 @@ import axios from 'axios';
 import Notiflix from 'notiflix';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
-import { fetchImages } from './fetchImages';
-// import imageCard from './templets/imageCard.hbs';
+import NewsApiService from './js/NewsApiService';
+import LoadMoreBtn from './js/loadMoreBtn';
+import imagesTpl from './templets/image-cards.hbs';
 
 const refs = {
-  form: document.querySelector('.search-form'),
+  searchForm: document.querySelector('.search-form'),
+  inputEl: document.querySelector('input'),
+  gallery: document.querySelector('.gallery'),
+  btn: document.querySelector('.load-more'),
 };
-refs.form.addEventListener('submit', onFormSubmit);
 
-function onFormSubmit(event) {
+const loadMoreBtn = new LoadMoreBtn({
+  selector: '[data-action="load-more"]',
+  hidden: true,
+});
+
+const lightbox = new SimpleLightbox('.gallery a', {
+  captions: true,
+  captionsData: 'alt',
+  captionPosition: 'bottom',
+  captionDelay: '250',
+});
+
+const newsApiService = new NewsApiService();
+
+refs.searchForm.addEventListener('submit', onSearch);
+loadMoreBtn.refs.button.addEventListener('click', fetchImages);
+
+function onSearch(event) {
   event.preventDefault();
-  const query = event.target.elements.searchQuery.value;
 
-  fetchImages(query);
+  newsApiService.searchQuery = event.currentTarget.elements.searchQuery.value;
+
+  if (!newsApiService.searchQuery) {
+    Notiflix.Notify.failure('What are we looking for?');
+    return;
+  }
+
+  loadMoreBtn.show();
+  newsApiService.resetPage();
+  clearImagesContainer();
+  fetchImages();
 }
+
+function fetchImages() {
+  loadMoreBtn.disable();
+
+  newsApiService.fetchImages().then(({ data }) => {
+    newsApiService.loadedNow += data.hits.length;
+
+    if (!data.hits.length) {
+      Notiflix.Notify.failure(
+        'Sorry, there are no images matching your search query. Please try again.'
+      );
+      return;
+    }
+    Notiflix.Notify.info(`Hooray! We found ${data.total} images.`);
+    appendImagesMarkup(data.hits);
+    lightbox.refresh();
+    loadMoreBtn.enable();
+  });
+}
+
+function appendImagesMarkup(images) {
+  refs.gallery.insertAdjacentHTML('beforeend', imagesTpl(images));
+}
+
+function clearImagesContainer() {
+  refs.gallery.innerHTML = '';
+}
+
+// function onSearch(event) {
+//   event.preventDefault();
+//   const searchQuery = event.target.elements.searchQuery.value;
+//   if (!searchQuery) {
+//     Notiflix.Notify.info('What are we looking for?');
+//     return;
+//   }
+
+//   refs.gallery.innerHTML = '';
+
+//   fetchImages(searchQuery).then(data => {
+//     if (!data.hits.length) {
+//       Notiflix.Notify.failure(
+//         'Sorry, there are no images matching your search query. Please try again.'
+//       );
+//       return;
+//     } else {
+//       Notiflix.Notify.info(`Hooray! We found ${data.totalHits} images.`);
+//       renderImages(data.hits);
+//     }
+//   });
+//   // .catch(console.log(eror));
+// }
+
+// function renderImages(data) {
+//   const markup = imagesTpl(data);
+
+//   refs.gallery.innerHTML = markup;
+// }

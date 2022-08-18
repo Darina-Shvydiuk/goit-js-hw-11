@@ -50,12 +50,13 @@ function fetchImages() {
   loadMoreBtn.disable();
 
   newsApiService.fetchImages().then(({ data }) => {
-    newsApiService.loadedNow += data.hits.length;
+    // newsApiService.loadedNow += data.hits.length;
 
     if (!data.hits.length) {
       Notiflix.Notify.failure(
         'Sorry, there are no images matching your search query. Please try again.'
       );
+      loadMoreBtn.hide();
       return;
     }
     Notiflix.Notify.info(`Hooray! We found ${data.total} images.`);

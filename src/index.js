@@ -50,14 +50,17 @@ function fetchImages() {
   loadMoreBtn.disable();
 
   newsApiService.fetchImages().then(({ data }) => {
-    // newsApiService.loadedNow += data.hits.length;
-
     if (!data.hits.length) {
       Notiflix.Notify.failure(
         'Sorry, there are no images matching your search query. Please try again.'
       );
       loadMoreBtn.hide();
       return;
+    }
+    if (data > totalPages) {
+      Notiflix.Notify.info(
+        'We`re sorry, but you`ve reached the end of search results.'
+      );
     }
     Notiflix.Notify.info(`Hooray! We found ${data.total} images.`);
     appendImagesMarkup(data.hits);

@@ -57,12 +57,18 @@ function fetchImages() {
       loadMoreBtn.hide();
       return;
     }
-    if (data > totalPages) {
+
+    if (newsApiService.page === 2) {
+      Notiflix.Notify.info(`Hooray! We found ${data.total} images.`);
+    }
+
+    if ((newsApiService.page - 1) * newsApiService.per_page > data.totalHits) {
       Notiflix.Notify.info(
         'We`re sorry, but you`ve reached the end of search results.'
       );
+      loadMoreBtn.hide();
     }
-    Notiflix.Notify.info(`Hooray! We found ${data.total} images.`);
+
     appendImagesMarkup(data.hits);
     lightbox.refresh();
     loadMoreBtn.enable();

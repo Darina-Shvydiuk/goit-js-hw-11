@@ -72,33 +72,3 @@ function appendImagesMarkup(images) {
 function clearImagesContainer() {
   refs.gallery.innerHTML = '';
 }
-
-// function onSearch(event) {
-//   event.preventDefault();
-//   const searchQuery = event.target.elements.searchQuery.value;
-//   if (!searchQuery) {
-//     Notiflix.Notify.info('What are we looking for?');
-//     return;
-//   }
-
-//   refs.gallery.innerHTML = '';
-
-//   fetchImages(searchQuery).then(data => {
-//     if (!data.hits.length) {
-//       Notiflix.Notify.failure(
-//         'Sorry, there are no images matching your search query. Please try again.'
-//       );
-//       return;
-//     } else {
-//       Notiflix.Notify.info(`Hooray! We found ${data.totalHits} images.`);
-//       renderImages(data.hits);
-//     }
-//   });
-//   // .catch(console.log(eror));
-// }
-
-// function renderImages(data) {
-//   const markup = imagesTpl(data);
-
-//   refs.gallery.innerHTML = markup;
-// }
